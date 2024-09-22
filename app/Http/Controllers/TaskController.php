@@ -52,15 +52,36 @@ class TaskController extends Controller
         ]);
 
         $task = Task::findOrFail($id);
+        
+        // Verifica se a tarefa pode ser pausada
+        if ($validatedData['status'] == 'paused') {
+            if ($task->status !== 'started') {
+                return redirect()->back()->withErrors(['status' => 'Cannot pause a task that has not been started.']);
+            }
+            if ($task->status === 'finished') {
+                return redirect()->back()->withErrors(['status' => 'Cannot pause a task that has already been finished.']);
+            }
+        }
+
+        // Verifica se a tarefa pode ser finalizada
+        if ($validatedData['status'] == 'finished') {
+            if ($task->status !== 'started') {
+                return redirect()->back()->withErrors(['status' => 'Cannot finish a task that has not been started.']);
+            }
+        }
+
+        // Atualiza o status da tarefa
         $task->status = $validatedData['status'];
 
+        // Se o status for 'finished', atualiza o end_date com a data e hora atuais
         if ($validatedData['status'] == 'finished') {
             $task->end_date = Carbon::now('America/Sao_Paulo');
         }
 
-        $task->save(); 
+        $task->save(); // Salva a task atualizada no banco de dados
 
         return redirect()->route('tasks.index')->with('success', 'Task updated successfully!');
     }
+
     
 }
