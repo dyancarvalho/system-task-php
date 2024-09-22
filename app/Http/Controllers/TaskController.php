@@ -11,26 +11,21 @@ class TaskController extends Controller
 {
     public function index()
     {
-        // Obtém todas as tasks do banco de dados
-        $tasks = Task::all();
-    
-        // Retorna a view 'tasks.index' passando as tasks
+        $tasks = Task::all();          
         return view('task.index', compact('tasks'));
     }
       
     
     public function store(Request $request)
-    {
-        // Validação dos dados recebidos
+    {       
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'responsible' => 'nullable|string|max:255',
             'category' => 'nullable|string|max:255',
             'status' => 'required',
-        ]);
-    
-        // Criação da tarefa no banco de dados
+        ]);    
+        
         $task = new Task();
         $task->name = $validatedData['name'];
         $task->description = $validatedData['description'] ?? null; 
@@ -40,35 +35,30 @@ class TaskController extends Controller
         $task->status = $validatedData['status'];
 
         $task->save();
-
-        // Redireciona para uma página de sucesso ou lista de tasks
+        
         return redirect()->route('tasks.index')->with('success', 'Task created successfully!');
     }
 
     public function edit($id)
     {
-        $task = Task::findOrFail($id); // Busca a task pelo ID
-        return view('task.edit', compact('task')); // Retorna a view com a task
+        $task = Task::findOrFail($id);
+        return view('task.edit', compact('task'));
     }
 
-    // Método para atualizar o status e o end_date
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
             'status' => 'required|string|in:pending,started,paused,finished',
         ]);
 
-        $task = Task::findOrFail($id); // Busca a task pelo ID
+        $task = Task::findOrFail($id);
         $task->status = $validatedData['status'];
 
-
-
-        // Se o status for 'finished', atualiza o end_date com a data e hora atuais
         if ($validatedData['status'] == 'finished') {
             $task->end_date = Carbon::now('America/Sao_Paulo');
         }
 
-        $task->save(); // Salva a task atualizada no banco de dados
+        $task->save(); 
 
         return redirect()->route('tasks.index')->with('success', 'Task updated successfully!');
     }

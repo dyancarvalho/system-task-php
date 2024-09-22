@@ -28,7 +28,7 @@
                                     <th>Start</th>
                                     <th>End</th>
                                     <th>Duration</th>
-                                    <th>Edit</th> <!-- Coluna para o botão de ação -->
+                                    <th>Edit</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -49,7 +49,6 @@
                                             @endif
                                         </td>                                        
                                         <td>
-                                            <!-- Botão de edição -->
                                             <a href="{{ route('task.edit', $task->id) }}" class="btn btn-sm btn-primary">E</a>
                                         </td>
                                     </tr>
